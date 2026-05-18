@@ -1264,7 +1264,7 @@
         <div class="step-header">
           <div class="step-eyebrow">시작 전</div>
           <h2>메타 광고 위계 구조</h2>
-          <p class="step-sub">메타 광고는 3단 구조입니다. 이 위계를 모르면 캠페인 출고 5게이트가 막연해집니다.</p>
+          <p class="step-sub">메타 광고는 3단 구조입니다. 이 위계를 모르면 캠페인 집행 5게이트가 막연해집니다.</p>
         </div>
 
         <div class="hierarchy">
@@ -1287,7 +1287,7 @@
 
         <div class="callout info">
           <strong>핵심 비유</strong>
-          캠페인 = "왜 광고하는가" · 광고 세트 = "누구에게 얼마로" · 광고 = "무엇을 보여주는가". 이 3개를 분리해서 생각해야 출고도 진단도 가능합니다.
+          캠페인 = "왜 광고하는가" · 광고 세트 = "누구에게 얼마로" · 광고 = "무엇을 보여주는가". 이 3개를 분리해서 생각해야 집행도 진단도 가능합니다.
         </div>
       </section>
 
@@ -1497,7 +1497,7 @@
             <tr><td><code>ads_activate_entity</code></td><td>일시정지 → 활성. 광고비 즉시 흐름</td></tr>
             <tr><td><code>ads_catalog_create</code></td><td>신규 카탈로그</td></tr>
             <tr><td><code>ads_catalog_create_product_set</code></td><td>상품 세트</td></tr>
-            <tr><td><code>ads_create_ad</code></td><td>광고 출고 = 즉시 노출</td></tr>
+            <tr><td><code>ads_create_ad</code></td><td>광고 집행 = 즉시 노출</td></tr>
             <tr><td><code>ads_create_ad_set</code></td><td>일예산·타게팅</td></tr>
             <tr><td><code>ads_create_campaign</code></td><td>예산 컨테이너</td></tr>
             <tr><td><code>ads_create_creative</code></td><td>크리에이티브 자산</td></tr>
@@ -1547,7 +1547,7 @@
 1. 진단 모드 — Read-only 6단계 헬스체크
    (ads_get_ad_accounts → ads_get_ad_account_pages → ads_get_datasets →
     ads_get_dataset_quality → ads_insights_advertiser_context → ads_get_opportunity_score)
-2. 캠페인 모드 — 출고 5게이트 (구조→오퍼→마진→톤→출고)
+2. 캠페인 모드 — 집행 5게이트 (구조→오퍼→마진→톤→집행)
 3. 리포트 모드 — 인사이트 분석 + HTML 시각판 저장
 4. 응급 모드 — ROAS 박살 캠페인 정지·원인 분석
 5. 오디언스 모드 — PII 업로드 게이트, 법무 검토 필수
@@ -1593,7 +1593,7 @@
 | 서브명령 | 모드 | 액션 |
 |---|---|---|
 | (없음) 또는 `진단` | 헬스체크 | Read-only 6단계 |
-| `캠페인 &lt;설명&gt;` | 출고 SOP | 구조→설계→검증→출고 |
+| `캠페인 &lt;설명&gt;` | 집행 SOP | 구조→설계→검증→집행 |
 | `리포트 &lt;기간&gt;` | 성과 분석 | 인사이트 + HTML |
 | `응급 &lt;캠페인&gt;` | 위기 대응 | 정지·원인 분석 |
 | `오디언스 &lt;설명&gt;` | PII 게이트 | 법무 검토 |
@@ -1618,12 +1618,12 @@
 6. ads_get_opportunity_score
 각 결과에 빨간불·노란불·녹색불 라벨링.
 
-## 모드 2: 캠페인 출고 SOP
+## 모드 2: 캠페인 집행 SOP
 Gate 1: 구조 검증 (Read)
 Gate 2: 오퍼·카피 설계 (Claude가 직접 제안)
 Gate 3: 마진·예산 검증 (Claude가 직접 산출)
 Gate 4: 톤·미감 검수 (회사 톤 규칙 기준)
-Gate 5: 출고 (사용자 명시 승인)
+Gate 5: 집행 (사용자 명시 승인)
 
 ## 모드 3: 리포트
 ads_insights_performance_trend
@@ -1699,7 +1699,7 @@ ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
             </div>
             <div class="mode">
               <div class="cmd">캠페인</div>
-              <div class="label">출고 SOP</div>
+              <div class="label">집행 SOP</div>
               <div class="desc">5게이트 통과</div>
             </div>
             <div class="mode">
@@ -1720,7 +1720,7 @@ ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
           </div>
         </div>
 
-        <h3>캠페인 출고 5게이트</h3>
+        <h3>캠페인 집행 5게이트</h3>
         <p class="mute">신규 캠페인은 5단계 게이트를 순차 통과해야 합니다. 각 게이트 실패 시 사용자 승인 없이 다음 진행 금지.</p>
 
         <div class="gates">
@@ -1755,7 +1755,7 @@ ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
           <div class="gate">
             <div class="gate-badge">5</div>
             <div class="gate-content">
-              <div class="gate-title">출고 <span class="pill red" style="margin-left:8px">Write</span></div>
+              <div class="gate-title">집행 <span class="pill red" style="margin-left:8px">Write</span></div>
               <div class="gate-desc">사용자 명시 승인 → 캠페인 → 광고세트 → 크리에이티브 → 광고 → 활성화</div>
             </div>
           </div>
@@ -1776,7 +1776,7 @@ ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
         <div class="step-header">
           <div class="step-eyebrow">Step 06 · 첫 실전</div>
           <h2>진단부터 시작</h2>
-          <p class="step-sub">바로 캠페인 출고하지 말고 Read-only 진단부터 돌립니다. 광고계정 헬스 확인 후 출고 진행 여부를 결정합니다. <strong>이 페이지의 <code>/smeta</code>는 Step 04에서 만든 본인 슬래시 명령으로 바꿔 읽으세요.</strong></p>
+          <p class="step-sub">바로 캠페인 집행하지 말고 Read-only 진단부터 돌립니다. 광고계정 헬스 확인 후 집행 진행 여부를 결정합니다. <strong>이 페이지의 <code>/smeta</code>는 Step 04에서 만든 본인 슬래시 명령으로 바꿔 읽으세요.</strong></p>
         </div>
 
         <h3>1. 진단 실행</h3>
@@ -1789,7 +1789,7 @@ ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
             <tr><th>상태</th><th>다음 액션</th></tr>
           </thead>
           <tbody>
-            <tr><td><span class="pill red">픽셀 미설치</span></td><td>광고 출고 보류. 픽셀 설치 SOP 우선</td></tr>
+            <tr><td><span class="pill red">픽셀 미설치</span></td><td>광고 집행 보류. 픽셀 설치 SOP 우선</td></tr>
             <tr><td><span class="pill amber">데이터 품질 낮음</span></td><td>운영 직무 에이전트 호출, 데이터 정제 우선</td></tr>
             <tr><td><span class="pill green">기회 점수 양호</span></td><td><code>/smeta 캠페인 &lt;설명&gt;</code> 진행</td></tr>
           </tbody>
@@ -1827,7 +1827,7 @@ ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
           <strong>일예산 캡 — 3중 안전망</strong>
           <ol>
             <li><strong>입력 단계</strong> — 명령에 <code>일예산 ₩20,000</code> 직접 명시</li>
-            <li><strong>Gate 5 출고 직전</strong> — Claude가 보여주는 캠페인 패키지에서 일예산 칸 직접 확인</li>
+            <li><strong>Gate 5 집행 직전</strong> — Claude가 보여주는 캠페인 패키지에서 일예산 칸 직접 확인</li>
             <li><strong>Ads Manager 계정 한도</strong> — BM → 결제 → 광고계정 지출 한도(Account Spending Limit)에 월 한도 미리 설정 (가장 안전 · 강력 권장)</li>
           </ol>
         </div>
@@ -1918,12 +1918,12 @@ claude mcp add-from-claude-desktop</code></pre>
 
         <div class="ts-item">
           <h4><span class="ts-num">4</span><code>/smeta 캠페인</code> Gate 1 실패 — "픽셀 미설치"</h4>
-          <p>픽셀 없으면 광고 출고 불가 (전환 추적 0). 출고 보류하고 픽셀 설치 SOP 먼저.</p>
+          <p>픽셀 없으면 광고 집행 불가 (전환 추적 0). 집행 보류하고 픽셀 설치 SOP 먼저.</p>
           <p><strong>해결:</strong> <a href="https://business.facebook.com/events_manager">이벤트 매니저</a> → 새 데이터 소스 → 웹 → 픽셀 생성 → 사이트에 코드 삽입. 앱 트랙이면 앱 이벤트 SDK 별도.</p>
         </div>
 
         <div class="ts-item">
-          <h4><span class="ts-num">5</span>캠페인 출고했는데 노출 0 / 광고비 0</h4>
+          <h4><span class="ts-num">5</span>캠페인 집행했는데 노출 0 / 광고비 0</h4>
           <p>메타 광고 검수 대기(보통 24시간). 또는 카드 결제 실패. 또는 광고계정 지출 한도 초과.</p>
           <p><strong>해결:</strong> Ads Manager → 광고계정 개요 → 결제 상태 + 검수 상태 확인. 정지된 캠페인은 <code>/smeta 응급</code>으로 진단.</p>
         </div>
@@ -2049,26 +2049,26 @@ claude mcp add-from-claude-desktop</code></pre>
             <li>44개 권한 분류 적용 (Read 34개 = 항상 허용, Write 10개 = 승인 필요)</li>
             <li>광고계정 지출 한도(Account Spending Limit) 월 한도 설정</li>
             <li><code>/smeta</code> 실행 시 진단 6단계가 실제로 돌아감</li>
-            <li>첫 캠페인 일예산 ₩10K~₩20K 캡으로 출고</li>
+            <li>첫 캠페인 일예산 ₩10K~₩20K 캡으로 집행</li>
             <li>매일 아침 <code>/smeta 리포트 1</code> 모니터링 루틴 정착</li>
           </ul>
         </div>
       </section>
 
-      <!-- 출고 전 필독 + 공유 한 줄 -->
+      <!-- 집행 전 필독 + 공유 한 줄 -->
       <section id="legal-final" class="step">
         <div class="step-header">
           <div class="step-eyebrow">Before You Launch</div>
-          <h2>첫 캠페인 출고 전 필독</h2>
-          <p class="step-sub">자동화에 광고비를 100% 위임하지 마세요. 아래 3가지는 반드시 본인이 직접 확인하고 출고하세요.</p>
+          <h2>첫 캠페인 집행 전 필독</h2>
+          <p class="step-sub">자동화에 광고비를 100% 위임하지 마세요. 아래 3가지는 반드시 본인이 직접 확인하고 집행하세요.</p>
         </div>
 
         <div class="callout danger">
-          <strong>⚠ 출고 전 3중 안전 체크</strong>
+          <strong>⚠ 집행 전 3중 안전 체크</strong>
           <ol style="margin-top:8px">
             <li>Meta Ads Manager에서 <strong>광고계정 지출 한도(Account Spending Limit)</strong> 월 한도 설정</li>
             <li>첫 캠페인 <strong>일예산을 ₩10,000~20,000</strong>으로 제한</li>
-            <li>출고 후 <strong>24시간 이내 검수·노출 결과 확인</strong> (Ads Manager 직접 접속)</li>
+            <li>집행 후 <strong>24시간 이내 검수·노출 결과 확인</strong> (Ads Manager 직접 접속)</li>
           </ol>
         </div>
 

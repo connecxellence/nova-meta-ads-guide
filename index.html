@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta Ads Automation Workflow — nova</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --paper: #ffffff;
+    --ink: #0a0a0a;
+    --ink-2: #27272a;
+    --mute: #71717a;
+    --mute-2: #a1a1aa;
+    --line: #e4e4e7;
+    --line-2: #f4f4f5;
+    --accent: #0f766e;
+    --accent-soft: #ccfbf1;
+    --accent-ink: #134e4a;
+    --green: #16a34a;
+    --amber: #d97706;
+    --red: #dc2626;
+    --blue: #2563eb;
+    --code-bg: #18181b;
+    --code-fg: #f4f4f5;
+    --radius: 12px;
+    --radius-lg: 16px;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink-2);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    font-size: 15px;
+    letter-spacing: -0.005em;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    background: rgba(250, 250, 249, 0.85);
+    backdrop-filter: saturate(180%) blur(8px);
+    -webkit-backdrop-filter: saturate(180%) blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .topbar-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--mute);
+  }
+  @media (max-width: 640px) {
+    .topbar-meta { display: none; }
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 64px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    margin: 0 0 24px;
+    max-width: 900px;
+  }
+  .hero-lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--mute);
+    max-width: 720px;
+    margin: 0 0 32px;
+    font-weight: 400;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding: 24px 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .hero-meta-item {
+    font-size: 13px;
+  }
+  .hero-meta-item .key {
+    color: var(--mute);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .hero-meta-item .val {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 64px;
+    padding: 64px 0;
+  }
+  @media (max-width: 960px) {
+    .main { grid-template-columns: 1fr; gap: 32px; padding: 40px 0; }
+  }
+
+  /* SIDEBAR TOC */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    height: fit-content;
+  }
+  @media (max-width: 960px) {
+    .sidebar {
+      position: static;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+  }
+  .sidebar-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mute);
+    margin-bottom: 12px;
+  }
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .toc-list a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--mute);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+  }
+  .toc-list a:hover {
+    background: var(--line-2);
+    color: var(--ink);
+  }
+  .toc-list a .num {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--line-2);
+    color: var(--mute);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .toc-list a:hover .num {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  /* CONTENT */
+  .content { min-width: 0; }
+
+  /* SECTION */
+  section.step {
+    margin-bottom: 80px;
+    scroll-margin-top: 80px;
+  }
+  section.step:last-of-type {
+    margin-bottom: 40px;
+  }
+
+  .step-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .step-header .step-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .step-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+  }
+  .step-header .step-sub {
+    font-size: 16px;
+    color: var(--mute);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 640px;
+  }
+
+  /* SUBHEADING */
+  h3 {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 40px 0 12px;
+    letter-spacing: -0.015em;
+  }
+  h3:first-child { margin-top: 0; }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 24px 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0 0 16px;
+    color: var(--ink-2);
+  }
+  p.mute {
+    color: var(--mute);
+    font-size: 14px;
+  }
+
+  /* CODE */
+  code {
+    font-family: 'JetBrains Mono', "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 13px;
+    background: var(--line-2);
+    color: var(--ink);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 18px 22px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    margin: 12px 0 16px;
+    line-height: 1.6;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', "SF Mono", "Menlo", monospace;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  /* LINKS */
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 16px 0;
+  }
+  .card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .card.recommended {
+    border-color: var(--accent);
+    background: linear-gradient(to bottom, #ffffff, #fdfffd);
+    position: relative;
+  }
+  .card.recommended::before {
+    content: "추천";
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .card h4 {
+    margin-top: 0;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .card p {
+    font-size: 13.5px;
+    color: var(--mute);
+    margin: 8px 0;
+  }
+  .card pre { margin: 12px 0 8px; font-size: 12px; padding: 12px 14px; }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: #f0fdfa;
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 16px 0;
+    font-size: 14px;
+    color: var(--accent-ink);
+  }
+  .callout.warn {
+    border-left-color: var(--amber);
+    background: #fffbeb;
+    color: #78350f;
+  }
+  .callout.danger {
+    border-left-color: var(--red);
+    background: #fef2f2;
+    color: #7f1d1d;
+  }
+  .callout.info {
+    border-left-color: var(--blue);
+    background: #eff6ff;
+    color: #1e3a8a;
+  }
+  .callout strong {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: inherit;
+  }
+  .callout ul, .callout ol {
+    margin: 8px 0 0;
+    padding-left: 20px;
+  }
+  .callout li {
+    margin-bottom: 4px;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    vertical-align: top;
+  }
+  th {
+    background: var(--line-2);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mute);
+    border-bottom: 1px solid var(--line);
+  }
+  td {
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  tr:last-child td { border-bottom: none; }
+  td code { font-size: 12px; }
+
+  /* PILL */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .pill.green { background: #dcfce7; color: #166534; }
+  .pill.green::before { background: var(--green); }
+  .pill.amber { background: #fef3c7; color: #92400e; }
+  .pill.amber::before { background: var(--amber); }
+  .pill.red { background: #fee2e2; color: #991b1b; }
+  .pill.red::before { background: var(--red); }
+  .pill.blue { background: #dbeafe; color: #1e40af; }
+  .pill.blue::before { background: var(--blue); }
+
+  /* GLOSSARY */
+  .glossary {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin: 24px 0 40px;
+  }
+  .glossary-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mute);
+    margin-bottom: 16px;
+  }
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px 32px;
+  }
+  .glossary-item {
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .glossary-item dt {
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+  .glossary-item dd {
+    margin: 0;
+    color: var(--mute);
+    font-size: 13px;
+  }
+
+  /* ROUTER */
+  .router {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin: 24px 0;
+  }
+  .router-title {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mute);
+    margin-bottom: 24px;
+  }
+  .router-center {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .router-center code {
+    background: var(--ink);
+    color: white;
+    font-size: 15px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-block;
+  }
+  .router-modes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 800px) {
+    .router-modes { grid-template-columns: repeat(2, 1fr); }
+  }
+  .mode {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 14px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .mode:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .mode .cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+  .mode .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .mode .desc {
+    font-size: 11.5px;
+    color: var(--mute);
+    line-height: 1.45;
+  }
+
+  /* GATES */
+  .gates {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .gate {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    position: relative;
+  }
+  .gate::after {
+    content: "";
+    position: absolute;
+    left: 28px;
+    bottom: -12px;
+    width: 1px;
+    height: 12px;
+    background: var(--line);
+  }
+  .gate:last-child::after { display: none; }
+  .gate-badge {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .gate:last-child .gate-badge {
+    background: var(--ink);
+    color: white;
+  }
+  .gate-content { flex: 1; }
+  .gate-title {
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .gate-desc {
+    font-size: 13px;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin: 20px 0;
+  }
+  .checklist-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .checklist ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .checklist li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .checklist li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    margin-top: 2px;
+  }
+
+  /* TROUBLESHOOT */
+  .ts-item {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .ts-item .ts-num {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 24px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  .ts-item h4 {
+    margin: 0 0 10px;
+    font-size: 14.5px;
+    display: flex;
+    align-items: center;
+  }
+  .ts-item p {
+    font-size: 13.5px;
+    color: var(--mute);
+    margin: 8px 0;
+  }
+  .ts-item strong { color: var(--ink); font-weight: 600; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 48px 0;
+    margin-top: 80px;
+    text-align: center;
+  }
+  .footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .footer-brand .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .footer-meta {
+    font-size: 12px;
+    color: var(--mute);
+    line-height: 1.7;
+  }
+  .footer-meta div { margin-bottom: 2px; }
+
+  /* OL */
+  ol {
+    counter-reset: list;
+    list-style: none;
+    padding-left: 0;
+    margin: 16px 0;
+  }
+  ol li {
+    counter-increment: list;
+    padding: 8px 0 8px 32px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  ol li::before {
+    content: counter(list);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 22px;
+    height: 22px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 6px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* UL bullets */
+  ul.bullets {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+  ul.bullets li {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  /* 광고 위계 다이어그램 */
+  .hierarchy {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .h-node {
+    position: relative;
+    padding: 18px 22px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-left: 0;
+  }
+  .h-node.level-2 { margin-left: 32px; margin-top: 14px; }
+  .h-node.level-3 { margin-left: 64px; margin-top: 14px; }
+  .h-node::before {
+    content: "";
+    position: absolute;
+    background: var(--accent);
+    opacity: 0.25;
+  }
+  .h-node.level-2::before {
+    left: -20px;
+    top: -14px;
+    width: 1px;
+    height: calc(50% + 14px);
+  }
+  .h-node.level-2::after {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.25;
+  }
+  .h-node.level-3::before {
+    left: -20px;
+    top: -14px;
+    width: 1px;
+    height: calc(50% + 14px);
+  }
+  .h-node.level-3::after {
+    content: "";
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.25;
+  }
+  .h-node .h-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .h-node .h-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .h-node .h-desc {
+    font-size: 13px;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+  @media (max-width: 640px) {
+    .h-node.level-2 { margin-left: 18px; }
+    .h-node.level-3 { margin-left: 36px; }
+  }
+
+  /* 핵심 지표 그리드 */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .metric {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .metric-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .metric-def {
+    font-size: 12.5px;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+    line-height: 1.45;
+  }
+  .metric-bench {
+    font-size: 11.5px;
+    color: var(--mute);
+    padding-top: 8px;
+    border-top: 1px solid var(--line-2);
+  }
+  .metric-bench strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* 공식 박스 */
+  .formula {
+    background: linear-gradient(135deg, #f0fdfa 0%, #fafaf9 100%);
+    border: 1px solid var(--accent-soft);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+  .formula-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .formula-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 600;
+    padding: 10px 14px;
+    background: var(--paper);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+  .formula-ex {
+    font-size: 13px;
+    color: var(--mute);
+    line-height: 1.55;
+  }
+  .formula-ex strong {
+    color: var(--ink);
+  }
+
+  /* FAQ */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  details.faq {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  details.faq[open] {
+    border-color: var(--accent);
+  }
+  details.faq summary {
+    padding: 16px 20px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after {
+    content: "+";
+    color: var(--mute);
+    font-size: 20px;
+    font-weight: 400;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  details.faq[open] summary::after {
+    content: "−";
+    color: var(--accent);
+  }
+  details.faq .faq-body {
+    padding: 0 20px 18px;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  details.faq .faq-body code {
+    font-size: 12px;
+  }
+
+  /* 코드블럭 복사 버튼 */
+  .pre-wrap {
+    position: relative;
+  }
+  .pre-wrap pre { margin: 0; }
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--mute-2);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .pre-wrap:hover .copy-btn {
+    opacity: 1;
+  }
+  .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: var(--code-fg);
+  }
+  .copy-btn.copied {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    opacity: 1;
+  }
+  .pre-wrap { margin: 12px 0 16px; }
+
+  /* 스크린샷 플레이스홀더 */
+  .screenshot {
+    background: linear-gradient(135deg, #f5f3ed 0%, #fafaf9 100%);
+    border: 2px dashed var(--line);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    margin: 16px 0;
+    text-align: center;
+    color: var(--mute);
+  }
+  .screenshot-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    border-radius: 12px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .screenshot-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--mute-2);
+    margin-bottom: 8px;
+  }
+  .screenshot-title {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .screenshot-desc {
+    font-size: 12.5px;
+    color: var(--mute);
+    line-height: 1.55;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .screenshot img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  /* OS 라벨 */
+  .os-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--line-2);
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  /* 인쇄용 */
+  @media print {
+    body { background: white; color: black; font-size: 11pt; }
+    .topbar, .sidebar, .copy-btn, footer { display: none !important; }
+    .main {
+      display: block;
+      padding: 0;
+    }
+    .container { padding: 0; max-width: 100%; }
+    .hero { padding: 0 0 24pt; border-bottom: 1pt solid #ccc; page-break-after: avoid; }
+    section.step {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      margin-bottom: 24pt;
+    }
+    .step-header { page-break-after: avoid; }
+    h2, h3, h4 { page-break-after: avoid; }
+    pre {
+      background: #f4f4f5 !important;
+      color: black !important;
+      border: 1pt solid #ccc;
+      page-break-inside: avoid;
+    }
+    pre code { color: black !important; }
+    .card, .callout, table, .glossary, .checklist, .router, .formula, .ts-item, details.faq {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    a { color: black; text-decoration: underline; }
+    a[href]::after {
+      content: " (" attr(href) ")";
+      font-size: 9pt;
+      color: #555;
+    }
+    a[href^="#"]::after { content: ""; }
+    details.faq { border: 1pt solid #ccc; }
+    details.faq summary::after { display: none; }
+    details.faq[open] .faq-body, details.faq .faq-body { display: block; padding: 0 20pt 12pt; }
+    details.faq:not([open]) .faq-body { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="#top" class="brand"><span class="brand-dot"></span>nova</a>
+    <div class="topbar-meta">
+      <span>Meta Ads Automation Workflow</span>
+      <span>v0.7</span>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="container" id="top">
+  <section class="hero">
+    <div class="hero-tag">Setup Workflow Guide</div>
+    <h1>메타 광고를 AI에게 안전하게 맡기는 셋업 워크플로우.</h1>
+    <p class="hero-lede">
+      Claude Code, Meta Ads MCP, 그리고 본인 회사용 슬래시 명령을 처음부터 만드는 7단계 가이드입니다. 광고비 사고 없이 첫 캠페인까지. 본 문서는 nova의 레퍼런스로 보여주지만, <strong>본인 환경에 맞춰 슬래시 명령을 직접 만드는 방법까지 포함</strong>합니다.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="key">작성</span>
+        <span class="val">nova</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="key">소요 시간</span>
+        <span class="val">1.5~3시간</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="key">난이도</span>
+        <span class="val">초중급 (이 문서만 따라가면 OK)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-label">Contents</div>
+      <ul class="toc-list">
+        <li><a href="#glossary"><span class="num">📖</span>용어 사전</a></li>
+        <li><a href="#hierarchy"><span class="num">🧱</span>광고 위계</a></li>
+        <li><a href="#step0"><span class="num">00</span>Claude Code 설치</a></li>
+        <li><a href="#step1"><span class="num">01</span>사전 점검</a></li>
+        <li><a href="#step2"><span class="num">02</span>MCP 연결</a></li>
+        <li><a href="#step3"><span class="num">03</span>권한 설정</a></li>
+        <li><a href="#customize"><span class="num">04</span>슬래시 명령 만들기</a></li>
+        <li><a href="#step4"><span class="num">05</span>라우터 구조</a></li>
+        <li><a href="#step5"><span class="num">06</span>첫 실전</a></li>
+        <li><a href="#metrics"><span class="num">📊</span>핵심 지표</a></li>
+        <li><a href="#troubleshoot"><span class="num">!</span>트러블슈팅</a></li>
+        <li><a href="#faq"><span class="num">?</span>FAQ</a></li>
+        <li><a href="#checklist"><span class="num">✓</span>최종 체크리스트</a></li>
+        <li><a href="#legal-final"><span class="num">⚖</span>공유·면책</a></li>
+      </ul>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- GLOSSARY -->
+      <section id="glossary" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">시작 전</div>
+          <h2>용어 사전</h2>
+          <p class="step-sub">본 가이드에 자주 등장하는 약어와 용어를 먼저 정리합니다. 모르는 게 나오면 여기로 돌아오세요.</p>
+        </div>
+
+        <div class="glossary">
+          <div class="glossary-label" style="margin-bottom:6px">광고·메타 용어</div>
+          <div class="glossary-grid">
+            <dl class="glossary-item"><dt>MCP</dt><dd>Model Context Protocol. AI에 붙이는 외부 도구 모음 표준</dd></dl>
+            <dl class="glossary-item"><dt>OAuth</dt><dd>비밀번호 없이 로그인으로만 권한 위임하는 인증 방식</dd></dl>
+            <dl class="glossary-item"><dt>ROAS</dt><dd>광고비 대비 매출 비율. 100원 써서 200원 벌면 2.0</dd></dl>
+            <dl class="glossary-item"><dt>CM1 / CM2</dt><dd>공헌이익 1차/2차. CM1 = 매출 − 변동비, CM2 = CM1 − 광고비</dd></dl>
+            <dl class="glossary-item"><dt>PII</dt><dd>개인식별정보 (이름·전화·이메일 등)</dd></dl>
+            <dl class="glossary-item"><dt>CAPI</dt><dd>Conversions API. 메타 서버 사이드 이벤트 전송</dd></dl>
+            <dl class="glossary-item"><dt>Pixel</dt><dd>웹사이트에 심는 메타 추적 코드</dd></dl>
+            <dl class="glossary-item"><dt>BM</dt><dd>Business Manager. 광고계정·페이지·픽셀을 묶는 컨테이너</dd></dl>
+            <dl class="glossary-item"><dt>위계</dt><dd>캠페인 → 광고세트 → 광고. 목표 → 예산·타게팅 → 실제 자산</dd></dl>
+          </div>
+
+          <div class="glossary-label" style="margin:24px 0 6px; padding-top:18px; border-top:1px solid var(--line-2);">개발 용어 (비개발자용)</div>
+          <div class="glossary-grid">
+            <dl class="glossary-item"><dt>CLI</dt><dd>Command Line Interface. 마우스 클릭 대신 키보드로 명령어를 입력해 컴퓨터를 조작하는 방식. 터미널이 대표적</dd></dl>
+            <dl class="glossary-item"><dt>GUI</dt><dd>Graphical User Interface. 마우스로 버튼·아이콘 클릭하는 일반적인 그래픽 화면 방식</dd></dl>
+            <dl class="glossary-item"><dt>터미널 (Terminal)</dt><dd>검은 창에 텍스트로 명령을 입력하는 도구. macOS = "터미널" 앱, Windows = "PowerShell" 또는 "Windows Terminal"</dd></dl>
+            <dl class="glossary-item"><dt>PowerShell</dt><dd>Windows의 기본 명령줄 도구. macOS의 터미널에 해당</dd></dl>
+            <dl class="glossary-item"><dt>Node.js</dt><dd>자바스크립트 실행 환경. Claude Code가 이걸 기반으로 돌아감</dd></dl>
+            <dl class="glossary-item"><dt>npm</dt><dd>Node Package Manager. Node.js 도구들을 설치·관리하는 도구. Node.js 설치하면 같이 깔림</dd></dl>
+            <dl class="glossary-item"><dt>-g 옵션</dt><dd>"global" 약자. npm 명령에 쓰면 "이 컴퓨터 전역에 설치" 의미. 어느 폴더에서든 호출 가능해짐</dd></dl>
+            <dl class="glossary-item"><dt>LTS</dt><dd>Long Term Support. 장기 지원 안정 버전. 일반 사용자는 항상 LTS 선택 권장</dd></dl>
+            <dl class="glossary-item"><dt>Homebrew (brew)</dt><dd>macOS용 패키지 매니저. 앱 스토어 대신 명령어로 개발 도구를 깔게 해줌</dd></dl>
+            <dl class="glossary-item"><dt>winget</dt><dd>Windows 11 기본 패키지 매니저. macOS의 Homebrew에 해당</dd></dl>
+            <dl class="glossary-item"><dt>WSL</dt><dd>Windows Subsystem for Linux. Windows 안에서 리눅스(우분투)를 돌리는 기능. 개발자가 주로 사용</dd></dl>
+            <dl class="glossary-item"><dt>~/ (틸드 슬래시)</dt><dd>현재 사용자의 홈 폴더 단축 표기. macOS·Linux에서 <code>/Users/이름/</code>, Windows에서 <code>C:\Users\이름\</code></dd></dl>
+            <dl class="glossary-item"><dt>Markdown (.md)</dt><dd>일반 텍스트로 서식을 표현하는 문법. 슬래시 명령 파일이 이 형식</dd></dl>
+            <dl class="glossary-item"><dt>settings.json</dt><dd>Claude Code 설정 파일. 권한·환경변수·훅 등을 저장. JSON 형식</dd></dl>
+            <dl class="glossary-item"><dt>JSON</dt><dd>JavaScript Object Notation. 설정·데이터를 저장하는 텍스트 형식. <code>{ "키": "값" }</code> 구조</dd></dl>
+            <dl class="glossary-item"><dt>HTTP transport</dt><dd>MCP 서버와 통신하는 방식. URL로 접속. Claude Code의 <code>--transport http</code> 옵션</dd></dl>
+            <dl class="glossary-item"><dt>--scope user</dt><dd>"사용자 전체에 등록" 옵션. 폴더 안 가리고 모든 곳에서 쓸 수 있게 됨</dd></dl>
+            <dl class="glossary-item"><dt>subagent_type</dt><dd>Claude 내부에서 호출할 전문 에이전트 유형. 예: <code>softhing-cro</code>, <code>my-cfo</code> 등 직무 에이전트 ID</dd></dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- 광고 위계 -->
+      <section id="hierarchy" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">시작 전</div>
+          <h2>메타 광고 위계 구조</h2>
+          <p class="step-sub">메타 광고는 3단 구조입니다. 이 위계를 모르면 캠페인 출고 5게이트가 막연해집니다.</p>
+        </div>
+
+        <div class="hierarchy">
+          <div class="h-node">
+            <span class="h-label">Level 1</span>
+            <div class="h-title">캠페인 (Campaign)</div>
+            <div class="h-desc">광고의 <strong>목적</strong>을 정의. 예: 전환, 트래픽, 리드, 도달, 브랜드 인지도. 캠페인 단위로 일/평생 예산을 설정할 수도 있음 (CBO).</div>
+          </div>
+          <div class="h-node level-2">
+            <span class="h-label">Level 2</span>
+            <div class="h-title">광고 세트 (Ad Set)</div>
+            <div class="h-desc"><strong>예산 · 타게팅 · 배치 · 일정</strong>을 설정. 한 캠페인 안에 여러 광고 세트로 A/B 분할 가능. CBO 쓰지 않으면 여기서 예산 설정.</div>
+          </div>
+          <div class="h-node level-3">
+            <span class="h-label">Level 3</span>
+            <div class="h-title">광고 (Ad)</div>
+            <div class="h-desc">실제로 노출되는 <strong>크리에이티브</strong>. 이미지·영상·헤드라인·본문·CTA. 한 광고 세트 안에 여러 광고 변종으로 크리에이티브 A/B 테스트.</div>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <strong>핵심 비유</strong>
+          캠페인 = "왜 광고하는가" · 광고 세트 = "누구에게 얼마로" · 광고 = "무엇을 보여주는가". 이 3개를 분리해서 생각해야 출고도 진단도 가능합니다.
+        </div>
+      </section>
+
+      <!-- STEP 0 -->
+      <section id="step0" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 00 · 환경 준비</div>
+          <h2>Claude Code 설치</h2>
+          <p class="step-sub">Anthropic이 만든 터미널 CLI 도구입니다. 슬래시 명령은 모두 이 위에서 실행됩니다. 이미 설치돼있으면 스킵하세요.</p>
+        </div>
+
+        <h3>0-1. 터미널 열기</h3>
+        <div class="card-row">
+          <div class="card">
+            <h4>🍎 macOS</h4>
+            <p>Spotlight(<code>⌘ + Space</code>) → "터미널" 입력 → Enter</p>
+            <p class="mute" style="margin-top:8px; font-size:12px">검은 창이 뜨면 정상. iTerm2·Warp 같은 대체 터미널도 OK.</p>
+          </div>
+          <div class="card">
+            <h4>🪟 Windows</h4>
+            <p>시작 메뉴 → "Windows Terminal" 또는 "PowerShell" 검색 → Enter</p>
+            <p class="mute" style="margin-top:8px; font-size:12px">Win11 기본 탑재. Win10이면 <a href="https://aka.ms/terminal">Microsoft Store</a>에서 "Windows Terminal" 무료 설치 권장. <code>Win + X</code> → "터미널"도 가능.</p>
+          </div>
+        </div>
+
+        <h3>0-2. Node.js 확인</h3>
+        <p class="mute">두 OS 공통. 터미널에 입력:</p>
+        <pre><code>node -v</code></pre>
+        <p class="mute"><code>v20.x</code> 이상이면 OK → <strong>0-3 스킵</strong>. <code>command not found</code> 또는 <code>'node'은(는) 내부 또는 외부 명령... 아닙니다</code>가 뜨면 0-3으로.</p>
+
+        <h3>0-3. Node.js 설치 (필요 시)</h3>
+        <div class="card-row">
+          <div class="card">
+            <h4>🍎 macOS</h4>
+            <p><strong>방법 A · 공식 인스톨러</strong></p>
+            <p class="mute" style="font-size:12.5px"><a href="https://nodejs.org">nodejs.org</a>에서 LTS .pkg 다운로드 → 더블클릭 설치</p>
+            <p style="margin-top:10px"><strong>방법 B · Homebrew</strong></p>
+            <pre><code>brew install node@20</code></pre>
+          </div>
+          <div class="card">
+            <h4>🪟 Windows</h4>
+            <p><strong>방법 A · 공식 인스톨러</strong></p>
+            <p class="mute" style="font-size:12.5px"><a href="https://nodejs.org">nodejs.org</a>에서 LTS .msi 다운로드 → "Add to PATH" 체크 → 설치</p>
+            <p style="margin-top:10px"><strong>방법 B · winget</strong></p>
+            <pre><code>winget install OpenJS.NodeJS.LTS</code></pre>
+          </div>
+        </div>
+        <div class="callout warn">
+          <strong>설치 후 반드시 터미널 재시작</strong>
+          새 PATH 인식을 위해 터미널을 완전히 닫고 다시 여세요. 그 후 <code>node -v</code>로 재확인.
+        </div>
+
+        <h3>0-4. Claude Code 설치</h3>
+        <p class="mute">두 OS 공통:</p>
+        <pre><code>npm install -g @anthropic-ai/claude-code</code></pre>
+        <p class="mute">설치 후 <code>claude --version</code>으로 확인.</p>
+
+        <div class="callout info">
+          <strong>🪟 Windows에서 권한 에러(EACCES·EPERM)가 나면</strong>
+          PowerShell을 <strong>관리자 권한</strong>으로 다시 실행 후 같은 명령 재시도. 또는 npm 글로벌 경로를 사용자 폴더로 변경: <code>npm config set prefix "$env:APPDATA\npm"</code> 후 재설치.
+        </div>
+
+        <h3>0-5. 첫 로그인</h3>
+        <pre><code>claude</code></pre>
+        <p class="mute">처음 실행하면 Anthropic 계정 로그인 안내. 기본 브라우저가 자동으로 열리고 인증 끝나면 터미널로 돌아옵니다.</p>
+
+        <div class="callout">
+          <strong>WSL을 쓰는 Windows 사용자라면</strong>
+          WSL(Ubuntu) 안에서도 동일하게 <code>node -v</code> → <code>npm install -g</code> 흐름. 단 Windows native PowerShell과 WSL은 별도 환경이므로, 한쪽에 설치한 Claude Code가 다른 쪽에서 보이지 않습니다. 메인으로 쓸 쪽을 정해서 설치하세요.
+        </div>
+      </section>
+
+      <!-- STEP 1 -->
+      <section id="step1" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 01 · 자산 점검</div>
+          <h2>메타 비즈니스 자산 정리</h2>
+          <p class="step-sub">MCP 연결 전에 광고계정·페이지·픽셀이 비즈니스 매니저에 묶여있는지 먼저 확인합니다.</p>
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-label">사전 체크리스트</div>
+          <ul>
+            <li>비즈니스 매니저(BM) 계정에 광고계정 1개 이상 연결돼있다</li>
+            <li>광고계정에 결제수단(카드)이 등록돼있다</li>
+            <li>광고하려는 페이지(인스타그램 비즈니스 계정 포함)가 같은 BM에 묶여있다</li>
+            <li>(D2C 광고 시) Pixel 또는 CAPI 데이터셋이 설치돼있다</li>
+            <li>(카탈로그 광고 시) 상품 카탈로그가 만들어져있다</li>
+          </ul>
+        </div>
+
+        <div class="callout warn">
+          <strong>자산 분리 주의</strong>
+          개인 페이스북 자산과 사업용 자산이 섞여있으면 OAuth 동의 시 둘 다 노출됩니다. 사업용 BM만 연결되도록 정리하세요.
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section id="step2" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 02 · MCP 연결</div>
+          <h2>Meta Ads MCP 등록</h2>
+          <p class="step-sub">사용 환경에 따라 두 경로 중 선택합니다. Claude Code에서 <code>/smeta</code>를 쓸 거면 경로 B가 필수입니다.</p>
+        </div>
+
+        <div class="card-row">
+          <div class="card">
+            <h4>경로 A · Claude Desktop</h4>
+            <p>설정 → Connectors → Custom → URL 입력</p>
+            <pre><code>https://mcp.facebook.com/ads</code></pre>
+            <p>Facebook 로그인 → 권한 동의 → 자동 연결</p>
+          </div>
+          <div class="card recommended">
+            <h4>경로 B · Claude Code (터미널)</h4>
+            <p>유저 스코프로 1회 등록. 모든 폴더에서 사용 가능.</p>
+            <pre><code>claude mcp add \
+  --transport http \
+  --scope user \
+  meta-ads \
+  https://mcp.facebook.com/ads</code></pre>
+            <p>등록 후 <code>claude</code> 재시작 시 OAuth 자동 트리거</p>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <strong>두 경로 동시에도 가능</strong>
+          Desktop과 Code에 각각 등록 가능합니다. 단 OAuth는 각각 별도로 동의해야 합니다 (MCP 클라이언트 단위 인증).
+        </div>
+
+        <h3>연결 확인</h3>
+        <pre><code>claude mcp list</code></pre>
+        <p class="mute"><code>meta-ads: ... ✓ Connected</code>이 표시되면 정상입니다.</p>
+      </section>
+
+      <!-- STEP 3 -->
+      <section id="step3" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 03 · 권한 설정</div>
+          <h2>44개 권한 분류 — 어디서 어떻게 클릭하는가</h2>
+          <p class="step-sub">Meta Ads MCP는 44개 툴을 노출합니다. <strong>터미널이 아니라 Claude PC 앱(GUI)</strong>에서 각 툴을 "항상 허용 / 승인 필요"로 클릭 분류하는 작업입니다.</p>
+        </div>
+
+        <h3>1. 어디서 설정하는가</h3>
+        <div class="card-row">
+          <div class="card recommended">
+            <h4>🖥️ Claude Desktop 앱 (권장)</h4>
+            <p>가장 직관적. 클릭 한 번씩으로 44개 분류.</p>
+            <ol>
+              <li>Claude Desktop 실행</li>
+              <li>좌측 하단 프로필 아이콘 → <strong>설정(Settings)</strong></li>
+              <li>좌측 메뉴 <strong>Connectors</strong> 클릭</li>
+              <li>목록에서 <strong>meta-ads</strong> 클릭</li>
+              <li>스크롤 → "<strong>기타 도구 (44)</strong>" 섹션</li>
+              <li>각 줄 우측 토글로 <strong>항상 허용 / 승인 필요</strong> 선택</li>
+            </ol>
+          </div>
+          <div class="card">
+            <h4>⌨️ Claude Code (터미널) 대안</h4>
+            <p>Desktop 없이 Code만 쓰는 경우. 세 가지 방법.</p>
+            <p style="margin-top:10px"><strong>방법 A · 인터랙티브 프롬프트</strong></p>
+            <p class="mute" style="font-size:12.5px">툴 첫 호출 시 "Allow once / Allow always / Deny" 프롬프트 자동 노출. 그 자리에서 선택.</p>
+            <p style="margin-top:10px"><strong>방법 B · /permissions 명령</strong></p>
+            <pre><code>/permissions</code></pre>
+            <p class="mute" style="font-size:12.5px">세션 안에서 권한 일괄 관리 패널 진입.</p>
+            <p style="margin-top:10px"><strong>방법 C · settings.json 직접 편집</strong></p>
+            <p class="mute" style="font-size:12.5px"><code>~/.claude/settings.json</code>의 <code>permissions.allow</code> / <code>permissions.deny</code> 배열에 툴 이름 추가.</p>
+          </div>
+        </div>
+
+        <figure class="screenshot" style="padding:16px; text-align:left; background:var(--paper); border:1px solid var(--line); border-style:solid;">
+          <div class="screenshot-label" style="margin-bottom:10px; padding:0 6px;">📸 실제 화면 — Claude Desktop > 커스터마이즈 > 커넥터 > meta</div>
+          <img src="images/claude-desktop-meta-permissions.png" alt="Claude Desktop의 meta 커넥터 권한 설정 화면. 좌측 사이드바에 커넥터 목록, 중앙에 커넥터별 분류(웹/데스크톱/연결되지 않음), 우측에 meta 커넥터의 44개 도구 리스트와 각 도구별 '항상 허용 / 매번 승인 / 거부' 3단 토글 버튼이 표시됨." style="display:block; width:100%; height:auto; border-radius:8px; border:1px solid var(--line);">
+          <figcaption style="margin-top:12px; padding:0 6px; font-size:12.5px; color:var(--mute); line-height:1.6;">
+            우측 패널의 각 도구 줄 끝에 3개 토글이 있습니다:
+            <span style="display:inline-block; padding:1px 8px; background:#dcfce7; color:#166534; border-radius:4px; font-weight:600;">✓ 항상 허용</span> /
+            <span style="display:inline-block; padding:1px 8px; background:#fef3c7; color:#92400e; border-radius:4px; font-weight:600;">✋ 매번 승인</span> /
+            <span style="display:inline-block; padding:1px 8px; background:#fee2e2; color:#991b1b; border-radius:4px; font-weight:600;">⊘ 거부</span>.
+            본 가이드의 분류 기준에 따라 34개는 ✓, 10개는 ✋로 설정하면 끝.
+          </figcaption>
+        </figure>
+
+        <h3>2. 분류 기준 — 2등급</h3>
+        <div class="card-row">
+          <div class="card">
+            <h4><span class="pill green">Read-only</span></h4>
+            <p style="font-size:15px; color:var(--ink); font-weight:600; margin-top:8px;">항상 허용 · 34개</p>
+            <p>이름에 <code>get</code> 또는 <code>insights</code>가 들어가면 전부 해당. 광고비 0원, 데이터 조회만.</p>
+          </div>
+          <div class="card">
+            <h4><span class="pill red">Write / PII</span></h4>
+            <p style="font-size:15px; color:var(--ink); font-weight:600; margin-top:8px;">승인 필요 · 10개</p>
+            <p>이름에 <code>create</code>·<code>update</code>·<code>activate</code>가 들어가면 전부 해당. 광고비 직접 차감 또는 PII 업로드.</p>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <strong>외울 필요 없는 빠른 패턴</strong>
+          <code>get</code> · <code>insights</code> → ✅ 항상 허용 (34개) &nbsp;|&nbsp; <code>create</code> · <code>update</code> · <code>activate</code> → ⛔ 승인 필요 (10개). 메타가 새 툴을 추가해도 이 패턴이면 즉시 분류 가능.
+        </div>
+
+        <h3>3. 승인 필요 10개 (절대 자동 허용 금지)</h3>
+        <table>
+          <thead>
+            <tr><th style="width:50%">툴 이름</th><th>위험</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>ads_activate_entity</code></td><td>일시정지 → 활성. 광고비 즉시 흐름</td></tr>
+            <tr><td><code>ads_catalog_create</code></td><td>신규 카탈로그</td></tr>
+            <tr><td><code>ads_catalog_create_product_set</code></td><td>상품 세트</td></tr>
+            <tr><td><code>ads_create_ad</code></td><td>광고 출고 = 즉시 노출</td></tr>
+            <tr><td><code>ads_create_ad_set</code></td><td>일예산·타게팅</td></tr>
+            <tr><td><code>ads_create_campaign</code></td><td>예산 컨테이너</td></tr>
+            <tr><td><code>ads_create_creative</code></td><td>크리에이티브 자산</td></tr>
+            <tr><td><code>ads_create_custom_audience</code></td><td>오디언스 컨테이너</td></tr>
+            <tr><td><code>ads_update_custom_audience_users</code></td><td><strong>PII 업로드 · 법무 검토 필수</strong></td></tr>
+            <tr><td><code>ads_update_entity</code></td><td>예산·타게팅 수정 · ROAS 박살 위험</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- STEP 04: 슬래시 명령 만들기 (Setup 가장 핵심) -->
+      <section id="customize" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 04 · 슬래시 명령 만들기</div>
+          <h2>Claude에게 시켜서 만들기 (코드 0줄)</h2>
+          <p class="step-sub">슬래시 명령을 직접 markdown으로 쓸 필요 없습니다. <strong>아래 프롬프트의 빈칸만 본인 회사 정보로 채워서 터미널에 붙여넣으면 Claude가 알아서 생성</strong>합니다.</p>
+        </div>
+
+        <h3>🚀 빠른 방법 — 프롬프트 복사 → 빈칸 채우기 → 터미널에 붙여넣기</h3>
+        <p class="mute">아래 박스 우상단 <strong>Copy</strong> 버튼 클릭 → <code>[ ... ]</code> 안에 본인 회사 정보 채우기 → Claude Code 터미널에 붙여넣고 Enter. Claude가 슬래시 명령 파일을 자동 생성합니다.</p>
+
+        <pre><code>아래 정보를 바탕으로 메타 광고 운영용 슬래시 명령을 만들어줘.
+~/.claude/commands/[원하는명령어이름].md 파일로 저장하면 돼.
+
+## 내 회사 기본 정보
+- 회사/브랜드 이름: [예: 무인양품 코리아]
+- 업종: [예: 라이프스타일 D2C / SaaS / 교육 / 식품 / 패션]
+- 광고할 제품/서비스: [예: 프리미엄 반려동물 침구 / B2B 분석 SaaS / 비건 화장품]
+- 평균 객단가(원): [예: 80,000]
+- 월 광고 예산(원): [예: 1,000,000]
+- 주요 타겟층: [예: 30~45 여성, 반려견 보호자, 수도권]
+
+## 브랜드 톤 규칙 (광고 카피에 반영)
+- 말투: [예: 존댓말, 친근하지만 전문성 강조]
+- 자주 쓰는 키워드: [예: 보호자, 함께, 편안함]
+- 피해야 할 표현: [예: 효능 단정, 100% 보장, 최고/유일 같은 과장어]
+
+## 예산·마진 안전판
+- 첫 캠페인 일예산 캡(원): [예: 20,000]
+- 최소 마진 기준: [예: CM2(공헌이익2차) 30% 이상]
+- 광고계정 월 한도(원): [예: 1,500,000]
+
+## 슬래시 명령 이름
+- 명령어 이름: [예: myads — /myads로 호출되게 됨]
+
+## 만들어야 할 5개 모드
+1. 진단 모드 — Read-only 6단계 헬스체크
+   (ads_get_ad_accounts → ads_get_ad_account_pages → ads_get_datasets →
+    ads_get_dataset_quality → ads_insights_advertiser_context → ads_get_opportunity_score)
+2. 캠페인 모드 — 출고 5게이트 (구조→오퍼→마진→톤→출고)
+3. 리포트 모드 — 인사이트 분석 + HTML 시각판 저장
+4. 응급 모드 — ROAS 박살 캠페인 정지·원인 분석
+5. 오디언스 모드 — PII 업로드 게이트, 법무 검토 필수
+
+## 공통 안전판 (변경 불가)
+- Write 권한 10개는 호출 전 매번 사용자 명시 승인:
+  ads_activate_entity, ads_catalog_create, ads_catalog_create_product_set,
+  ads_create_ad, ads_create_ad_set, ads_create_campaign, ads_create_creative,
+  ads_create_custom_audience, ads_update_custom_audience_users, ads_update_entity
+- 첫 캠페인 일예산 캡 적용
+- PII 업로드는 법무 검토 통과 전 차단
+- 다른 사업부·다른 광고 채널은 본 슬래시 범위 외
+
+파일 작성 끝나면:
+1. 어떤 경로에 저장했는지 알려줘
+2. Claude Code를 재시작해야 새 명령이 인식된다고 안내해줘
+3. 첫 사용 예시 1개 보여줘 ("/[명령어이름] 진단" 결과 흐름)</code></pre>
+
+        <div class="callout warn">
+          <strong>입력 팁</strong>
+          <code>[ ... ]</code> 안의 예시는 참고용. 본인 회사 실제 정보로 모두 교체 후 붙여넣으세요. 빈칸이 남아있으면 Claude가 물어볼 수도 있고, 일반 값으로 채워버릴 수도 있어서 작업이 길어집니다.
+        </div>
+
+        <h3>🔧 직접 만들고 싶다면 (수동)</h3>
+        <p class="mute">코드를 직접 다루는 게 편한 경우. Claude Code의 슬래시 명령은 단순히 markdown 파일입니다. 위치:</p>
+        <pre><code>~/.claude/commands/&lt;명령어이름&gt;.md</code></pre>
+        <p class="mute">파일명이 <code>myads.md</code>면 <code>/myads</code>로 호출됩니다.</p>
+
+        <h3>템플릿 (복사 → 본인 환경에 맞춰 수정)</h3>
+        <p class="mute">아래를 <code>~/.claude/commands/myads.md</code>로 저장하면 즉시 <code>/myads</code> 사용 가능. <code>&lt;...&gt;</code>로 표시된 부분만 본인 회사용으로 채우세요.</p>
+
+        <pre><code># 메타 광고 운영 — &lt;회사명&gt;
+
+메타 광고 운영을 라우팅한다. Meta Ads MCP 44개 툴을 조합해,
+**Write 전에 Read 3번** 원칙을 적용한다.
+
+## 입력
+서브명령 + 인자: $ARGUMENTS
+
+## 서브명령 라우팅
+입력이 비어있으면 진단 모드로 기본 실행.
+
+| 서브명령 | 모드 | 액션 |
+|---|---|---|
+| (없음) 또는 `진단` | 헬스체크 | Read-only 6단계 |
+| `캠페인 &lt;설명&gt;` | 출고 SOP | 구조→설계→검증→출고 |
+| `리포트 &lt;기간&gt;` | 성과 분석 | 인사이트 + HTML |
+| `응급 &lt;캠페인&gt;` | 위기 대응 | 정지·원인 분석 |
+| `오디언스 &lt;설명&gt;` | PII 게이트 | 법무 검토 |
+
+## 공통 안전판
+1. ⛔ Write 툴 10개는 호출 전 매번 사용자 명시 승인
+   (activate_entity / catalog_create / catalog_create_product_set /
+    create_ad / create_ad_set / create_campaign / create_creative /
+    create_custom_audience / update_custom_audience_users / update_entity)
+2. 첫 캠페인 일예산 ₩10K~₩20K 캡
+3. PII 업로드(update_custom_audience_users)는 법무 검토 통과 전 차단
+4. &lt;여기에 회사 브랜드 톤 규칙 작성&gt;
+5. &lt;여기에 회사 마진 정책 작성&gt;
+
+## 모드 1: 진단
+다음 순서대로 호출:
+1. ads_get_ad_accounts
+2. ads_get_ad_account_pages
+3. ads_get_datasets
+4. ads_get_dataset_quality
+5. ads_insights_advertiser_context
+6. ads_get_opportunity_score
+각 결과에 빨간불·노란불·녹색불 라벨링.
+
+## 모드 2: 캠페인 출고 SOP
+Gate 1: 구조 검증 (Read)
+Gate 2: 오퍼·카피 설계 (Claude가 직접 제안)
+Gate 3: 마진·예산 검증 (Claude가 직접 산출)
+Gate 4: 톤·미감 검수 (회사 톤 규칙 기준)
+Gate 5: 출고 (사용자 명시 승인)
+
+## 모드 3: 리포트
+ads_insights_performance_trend
+→ ads_insights_anomaly_signal
+→ ads_insights_industry_benchmark
+→ ads_get_opportunity_score
+결과를 HTML 시각판으로 저장 후 open.
+
+## 모드 4: 응급
+ads_get_ad_entities + ads_insights_performance_trend로 문제 캠페인 확인
+→ 사용자 승인 후 ads_update_entity로 PAUSED 처리
+
+## 모드 5: 오디언스 (PII 게이트)
+1. 업로드 데이터 출처·해시 처리 확인
+2. 법무 검토 (회사 개인정보처리방침 정합성)
+3. 통과 후에만 ads_create_custom_audience + ads_update_custom_audience_users 호출
+
+## 금지 사항
+- 자동 Write 호출 금지
+- &lt;여기에 회사별 금지 행동 작성&gt;</code></pre>
+
+        <h3>커스터마이즈 포인트 5종</h3>
+        <table>
+          <thead>
+            <tr><th>커스터마이즈 영역</th><th>예시</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>브랜드 톤 규칙</td><td>"존댓말 사용 / 과장 금지 / 가격 강조 우선" 등 자체 규칙</td></tr>
+            <tr><td>마진 정책</td><td>"CM2 30% 미만 캠페인 자동 정지 권유" 등</td></tr>
+            <tr><td>금지 표현</td><td>"의료 효능 단정 / 100% 보장 / 전후 비교 사진" 등</td></tr>
+            <tr><td>일예산 캡</td><td>회사 규모에 따라 ₩10K → ₩50K → ₩200K 등 조정</td></tr>
+            <tr><td>법무 게이트</td><td>PII 업로드 시 호출할 자체 법무 에이전트 또는 매뉴얼 체크리스트</td></tr>
+          </tbody>
+        </table>
+
+        <h3>(선택) 직무 에이전트 추가</h3>
+        <p class="mute">슬래시 명령 안에서 다른 에이전트를 호출하면 전문성 ↑. 예시:</p>
+        <pre><code>~/.claude/agents/my-cfo.md       # 재무 직무 에이전트
+~/.claude/agents/my-cro.md       # 매출 직무 에이전트
+~/.claude/agents/my-legal.md     # 법무 에이전트</code></pre>
+        <p class="mute">생성한 후 슬래시 명령에서 <code>Agent</code> 툴로 호출:</p>
+        <pre><code>Gate 3에서 Agent (subagent_type: 'my-cfo')를 병렬 호출,
+입력: "일예산 ₩X · 목표 ROAS Y에서 CM1/CM2 영향 산출"</code></pre>
+        <p class="mute">에이전트 작성법은 <a href="https://docs.claude.com/en/docs/claude-code">Anthropic 공식 문서</a> 참조.</p>
+
+        <h3>검증 — 슬래시 명령 등록 확인</h3>
+        <p class="mute">슬래시 명령 저장 후 Claude Code 재시작 → <code>/myads</code> 입력했을 때 자동완성이 뜨면 정상 등록.</p>
+
+        <div class="callout info">
+          <strong>이후 단계에서 본인 슬래시 명령 사용</strong>
+          본 가이드 이후 단계(Step 05·06)에서는 작성자의 예시 <code>/smeta</code>를 그대로 표기합니다. 본인이 만든 슬래시 명령(예: <code>/myads</code>)으로 바꿔서 읽으시면 됩니다.
+        </div>
+      </section>
+
+      <!-- STEP 05: 라우터 구조 -->
+      <section id="step4" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 05 · 라우터 구조</div>
+          <h2>슬래시 명령의 5개 모드 (예: /smeta)</h2>
+          <p class="step-sub">Step 04에서 만든 슬래시 명령은 1개 + 서브명령 5개로 구성됩니다. 입력 첫 단어로 모드가 결정됩니다. 아래 예시는 <code>/smeta</code> 기준 — 본인 명령으로 치환해서 보세요.</p>
+        </div>
+
+        <div class="router">
+          <div class="router-title">Single Entry — 5 Modes</div>
+          <div class="router-center">
+            <code>/smeta [서브명령] [인자]</code>
+          </div>
+          <div class="router-modes">
+            <div class="mode">
+              <div class="cmd">/smeta</div>
+              <div class="label">진단</div>
+              <div class="desc">헬스체크 6단계</div>
+            </div>
+            <div class="mode">
+              <div class="cmd">캠페인</div>
+              <div class="label">출고 SOP</div>
+              <div class="desc">5게이트 통과</div>
+            </div>
+            <div class="mode">
+              <div class="cmd">리포트</div>
+              <div class="label">성과 분석</div>
+              <div class="desc">HTML 시각화</div>
+            </div>
+            <div class="mode">
+              <div class="cmd">응급</div>
+              <div class="label">위기 대응</div>
+              <div class="desc">정지·원인 분석</div>
+            </div>
+            <div class="mode">
+              <div class="cmd">오디언스</div>
+              <div class="label">PII 게이트</div>
+              <div class="desc">법무 검토 필수</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>캠페인 출고 5게이트</h3>
+        <p class="mute">신규 캠페인은 5단계 게이트를 순차 통과해야 합니다. 각 게이트 실패 시 사용자 승인 없이 다음 진행 금지.</p>
+
+        <div class="gates">
+          <div class="gate">
+            <div class="gate-badge">1</div>
+            <div class="gate-content">
+              <div class="gate-title">구조 검증 <span class="pill green" style="margin-left:8px">Read-only</span></div>
+              <div class="gate-desc">광고계정·페이지·픽셀·카탈로그 존재 확인</div>
+            </div>
+          </div>
+          <div class="gate">
+            <div class="gate-badge">2</div>
+            <div class="gate-content">
+              <div class="gate-title">오퍼·카피 설계</div>
+              <div class="gate-desc">매출 직무 에이전트 자동 호출 → 가격·후크·카피 변종 3개</div>
+            </div>
+          </div>
+          <div class="gate">
+            <div class="gate-badge">3</div>
+            <div class="gate-content">
+              <div class="gate-title">마진·예산 검증</div>
+              <div class="gate-desc">재무 직무 에이전트 자동 호출 → CM1/CM2 영향 + 손익분기 매수량</div>
+            </div>
+          </div>
+          <div class="gate">
+            <div class="gate-badge">4</div>
+            <div class="gate-content">
+              <div class="gate-title">톤·미감 검수</div>
+              <div class="gate-desc">크리에이티브 에이전트 호출 (필요 시) → 브랜드 톤 규칙·과잉 리스크 점검</div>
+            </div>
+          </div>
+          <div class="gate">
+            <div class="gate-badge">5</div>
+            <div class="gate-content">
+              <div class="gate-title">출고 <span class="pill red" style="margin-left:8px">Write</span></div>
+              <div class="gate-desc">사용자 명시 승인 → 캠페인 → 광고세트 → 크리에이티브 → 광고 → 활성화</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout danger">
+          <strong>안전판 — 변경 불가</strong>
+          <ul class="bullets" style="margin:8px 0 0 0; padding-left:18px;">
+            <li>Gate 5(Write)는 항상 사용자 명시 승인 필요</li>
+            <li>첫 캠페인 일예산 ₩10K~₩20K 캡</li>
+            <li>PII 업로드(<code>ads_update_custom_audience_users</code>)는 법무 검토 통과 전 차단</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- STEP 5 -->
+      <section id="step5" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Step 06 · 첫 실전</div>
+          <h2>진단부터 시작</h2>
+          <p class="step-sub">바로 캠페인 출고하지 말고 Read-only 진단부터 돌립니다. 광고계정 헬스 확인 후 출고 진행 여부를 결정합니다. <strong>이 페이지의 <code>/smeta</code>는 Step 04에서 만든 본인 슬래시 명령으로 바꿔 읽으세요.</strong></p>
+        </div>
+
+        <h3>1. 진단 실행</h3>
+        <pre><code>/smeta</code></pre>
+        <p class="mute">6단계 헬스체크 자동 진행. 각 단계 결과는 빨간불 / 노란불 / 녹색불로 라벨링됩니다.</p>
+
+        <h3>2. 결과별 분기</h3>
+        <table>
+          <thead>
+            <tr><th>상태</th><th>다음 액션</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="pill red">픽셀 미설치</span></td><td>광고 출고 보류. 픽셀 설치 SOP 우선</td></tr>
+            <tr><td><span class="pill amber">데이터 품질 낮음</span></td><td>운영 직무 에이전트 호출, 데이터 정제 우선</td></tr>
+            <tr><td><span class="pill green">기회 점수 양호</span></td><td><code>/smeta 캠페인 &lt;설명&gt;</code> 진행</td></tr>
+          </tbody>
+        </table>
+
+        <h3>3. 첫 캠페인 입력 예시</h3>
+        <pre><code>/smeta 캠페인 D2C 첫 캠페인
+일예산 ₩20,000, 7일
+타겟: 30~45 여성
+랜딩: example.com/product
+목표: 첫 5건 결제</code></pre>
+
+        <h3>4. 일예산 산출 공식</h3>
+        <p class="mute">"₩20,000면 적당한가?"는 막연한 추정. 두 가지 산식 중 하나로 역산합니다.</p>
+
+        <div class="formula">
+          <div class="formula-label">방식 A · ROAS 기반 (매출 목표가 있을 때)</div>
+          <div class="formula-eq">일예산 = 목표 일 매출 ÷ 목표 ROAS</div>
+          <div class="formula-ex">
+            <strong>예시:</strong> 일 매출 ₩100,000 목표, ROAS 2.5 목표 → 일예산 <strong>₩40,000</strong><br>
+            <strong>주의:</strong> 첫 캠페인은 ROAS 1.0~1.5로 보수적으로 가정 (전환 데이터 부족)
+          </div>
+        </div>
+
+        <div class="formula">
+          <div class="formula-label">방식 B · CPA 기반 (전환 단가가 있을 때)</div>
+          <div class="formula-eq">일예산 = 목표 일 전환 수 × CPA × 1.5</div>
+          <div class="formula-ex">
+            <strong>예시:</strong> 일 5건 결제 목표, 목표 CPA ₩4,000 → 일예산 <strong>₩30,000</strong> (5 × 4,000 × 1.5)<br>
+            <strong>×1.5 이유:</strong> 학습 단계 비효율, 광고 검수 지연, 입찰 변동을 흡수하는 여유분
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>일예산 캡 — 3중 안전망</strong>
+          <ol>
+            <li><strong>입력 단계</strong> — 명령에 <code>일예산 ₩20,000</code> 직접 명시</li>
+            <li><strong>Gate 5 출고 직전</strong> — Claude가 보여주는 캠페인 패키지에서 일예산 칸 직접 확인</li>
+            <li><strong>Ads Manager 계정 한도</strong> — BM → 결제 → 광고계정 지출 한도(Account Spending Limit)에 월 한도 미리 설정 (가장 안전 · 강력 권장)</li>
+          </ol>
+        </div>
+
+        <h3>5. 운영 루틴</h3>
+        <table>
+          <thead>
+            <tr><th>시점</th><th>명령</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>매일 아침</td><td><code>/smeta 리포트 1</code> · 어제 성과</td></tr>
+            <tr><td>매주 월요일</td><td><code>/smeta 리포트 7</code> · 지난주 성과</td></tr>
+            <tr><td>ROAS 박살난 날</td><td><code>/smeta 응급 &lt;캠페인명&gt;</code> · 즉시 정지·원인 분석</td></tr>
+            <tr><td>리타게팅 시작 시</td><td><code>/smeta 오디언스 &lt;설명&gt;</code> · 법무 게이트 통과 후 진행</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+
+      <!-- 핵심 지표 -->
+      <section id="metrics" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">리포트 해석</div>
+          <h2>리포트에 등장하는 5대 지표</h2>
+          <p class="step-sub"><code>/smeta 리포트</code> 결과를 읽으려면 이 5개를 알아야 합니다. 좋고 나쁨의 대략 기준도 함께.</p>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="metric-key">CTR</div>
+            <div class="metric-def">클릭률 = 클릭 ÷ 노출 × 100%</div>
+            <div class="metric-bench">좋음: <strong>1.5% 이상</strong> · 평균: 0.9~1.5% · 나쁨: 0.5% 미만</div>
+          </div>
+          <div class="metric">
+            <div class="metric-key">CPC</div>
+            <div class="metric-def">클릭당 비용 = 광고비 ÷ 클릭</div>
+            <div class="metric-bench">좋음: <strong>₩200~600</strong> · 평균: ₩600~1,200 · 나쁨: ₩1,500 초과</div>
+          </div>
+          <div class="metric">
+            <div class="metric-key">CPM</div>
+            <div class="metric-def">천 노출당 비용 = 광고비 ÷ (노출 ÷ 1000)</div>
+            <div class="metric-bench">좋음: <strong>₩2,000~5,000</strong> · 평균: ₩5,000~9,000 · 나쁨: ₩12,000 초과</div>
+          </div>
+          <div class="metric">
+            <div class="metric-key">CPA</div>
+            <div class="metric-def">전환당 비용 = 광고비 ÷ 전환</div>
+            <div class="metric-bench">기준: <strong>LTV의 1/3 이하</strong> (LTV가 ₩30,000이면 CPA ₩10,000 이하)</div>
+          </div>
+          <div class="metric">
+            <div class="metric-key">ROAS</div>
+            <div class="metric-def">광고비 대비 매출 = 매출 ÷ 광고비</div>
+            <div class="metric-bench">손익분기: <strong>1.0</strong> · 성장: 2.0+ · 효율 캠페인: 3.0+ · 압도적: 5.0+</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>지표 해석 우선순위</strong>
+          첫 7일은 <strong>CPM·CTR</strong>(노출·클릭 효율) 위주로 판단. 데이터 쌓이면 <strong>CPA·ROAS</strong>(비즈니스 효율)로 이동. CTR이 평균인데 CPA가 나쁘면 → 랜딩페이지 문제. CTR이 낮으면 → 크리에이티브 문제.
+        </div>
+      </section>
+
+      <!-- TROUBLESHOOTING -->
+      <section id="troubleshoot" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">Troubleshooting</div>
+          <h2>자주 막히는 5가지 상황</h2>
+          <p class="step-sub">셋업 중 막히면 여기부터 확인하세요. 실제로 자주 발생하는 케이스입니다.</p>
+        </div>
+
+        <div class="ts-item">
+          <h4><span class="ts-num">1</span><code>claude mcp list</code>에서 <code>✗ Failed to connect</code></h4>
+          <p>MCP는 등록됐지만 OAuth 인증이 안 된 상태. 정상 동작입니다.</p>
+          <p><strong>해결:</strong> Claude Code 세션에서 <code>/smeta</code> 입력 → 브라우저 OAuth 자동 열림 → 페이스북 로그인. 안 열리면 ②번 참조.</p>
+        </div>
+
+        <div class="ts-item">
+          <h4><span class="ts-num">2</span>OAuth 브라우저가 자동으로 안 열림</h4>
+          <pre><code>claude mcp remove meta-ads
+claude mcp add-from-claude-desktop</code></pre>
+          <p>Claude Desktop에 이미 인증돼있으면 자격증명 그대로 가져옴. Desktop이 먼저 설치·인증돼있어야 합니다.</p>
+        </div>
+
+        <div class="ts-item">
+          <h4><span class="ts-num">3</span>Facebook 로그인은 됐는데 광고계정이 안 보임</h4>
+          <p>OAuth 동의 시 권한 스코프가 좁게 잡혔거나, BM에 광고계정이 안 묶여있는 경우.</p>
+          <p><strong>해결:</strong> <a href="https://business.facebook.com">business.facebook.com</a> → 비즈니스 설정 → 광고계정에서 광고계정이 같은 BM에 있는지 확인. 없으면 추가 후 OAuth 다시 시도.</p>
+        </div>
+
+        <div class="ts-item">
+          <h4><span class="ts-num">4</span><code>/smeta 캠페인</code> Gate 1 실패 — "픽셀 미설치"</h4>
+          <p>픽셀 없으면 광고 출고 불가 (전환 추적 0). 출고 보류하고 픽셀 설치 SOP 먼저.</p>
+          <p><strong>해결:</strong> <a href="https://business.facebook.com/events_manager">이벤트 매니저</a> → 새 데이터 소스 → 웹 → 픽셀 생성 → 사이트에 코드 삽입. 앱 트랙이면 앱 이벤트 SDK 별도.</p>
+        </div>
+
+        <div class="ts-item">
+          <h4><span class="ts-num">5</span>캠페인 출고했는데 노출 0 / 광고비 0</h4>
+          <p>메타 광고 검수 대기(보통 24시간). 또는 카드 결제 실패. 또는 광고계정 지출 한도 초과.</p>
+          <p><strong>해결:</strong> Ads Manager → 광고계정 개요 → 결제 상태 + 검수 상태 확인. 정지된 캠페인은 <code>/smeta 응급</code>으로 진단.</p>
+        </div>
+
+        <div class="callout danger">
+          <strong>광고비 의도치 않게 차감됐을 때</strong>
+          즉시 Ads Manager에서 캠페인 수동 일시정지. <code>/smeta 응급</code>은 분석용이며 메타 결제 환불은 처리하지 못합니다. 환불은 메타 광고 지원팀 직접 문의(<a href="https://business.facebook.com/business/help">business.facebook.com/business/help</a>).
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">FAQ</div>
+          <h2>자주 묻는 질문</h2>
+          <p class="step-sub">셋업 전후로 가장 많이 받는 질문 8개. 클릭해서 펼치세요.</p>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq">
+            <summary>전체 비용이 얼마나 드나요?</summary>
+            <div class="faq-body">
+              세 가지가 분리됩니다.<br><br>
+              <strong>1. Claude Code</strong> — Anthropic 구독 (Pro 월 $20, Max 월 $100~). 기본 Pro로도 충분.<br>
+              <strong>2. Meta Ads MCP</strong> — 메타 공식, 사용료 무료 (베타 단계).<br>
+              <strong>3. 광고비</strong> — 별도. 메타에 카드 등록한 만큼 차감. 본 가이드 권장 시작 일예산은 ₩10,000~20,000.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>AI 자동화에 광고비 맡겨도 안전한가요?</summary>
+            <div class="faq-body">
+              세 겹 안전망입니다.<br><br>
+              <strong>1.</strong> Write 액션 10개(create·update·activate)는 무조건 사용자 승인 필요. 자동 호출 차단.<br>
+              <strong>2.</strong> 슬래시 명령에 일예산 캡(₩10K~20K) 하드코딩.<br>
+              <strong>3.</strong> Ads Manager 계정 한도(Account Spending Limit)에 월 한도 별도 설정 — 어떤 사고가 나도 그 이상 안 빠짐.<br><br>
+              세 겹 다 뚫리려면 사용자가 직접 승인 + 캡 풀어주기 + 한도 풀어주기를 모두 해야 함.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>OAuth 토큰이 만료되면 어떻게 되나요?</summary>
+            <div class="faq-body">
+              메타 OAuth 토큰은 약 <strong>60~90일</strong> 후 자동 만료. 만료되면 <code>/smeta</code> 실행 시 자동으로 재인증 페이지가 브라우저에서 열립니다. Facebook 로그인 한 번 다시 하면 끝. 별도 작업 불필요.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>여러 광고계정 동시 운영 가능한가요?</summary>
+            <div class="faq-body">
+              가능합니다. 두 가지 방식:<br><br>
+              <strong>방식 1</strong> — 명령에 광고계정 ID 명시: <code>/smeta 캠페인 account_id=act_12345 ...</code><br>
+              <strong>방식 2</strong> — <code>/smeta 진단</code> 실행 시 Claude가 다중 계정 노출. 어느 계정에 작업할지 사용자가 답변.<br><br>
+              주의: 광고비 사고 방지를 위해 한 세션에 한 계정만 작업 권장.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>Claude 응답이 이상하거나 잘못된 답을 줄 때는?</summary>
+            <div class="faq-body">
+              자연어 모호성 때문일 확률이 가장 높음. 세 가지 시도:<br><br>
+              <strong>1.</strong> 더 구체적인 명령으로 재시도. "광고비 줄여줘"보다 "캠페인 X의 일예산을 ₩50K → ₩30K로 줄여줘"가 정확.<br>
+              <strong>2.</strong> <code>/smeta 진단</code>부터 다시 — 현재 상태 재인식.<br>
+              <strong>3.</strong> 메타 정책상 안 되는 액션일 수도 있음 (예: 활성 캠페인의 Special Ad Category 변경 등). 에러 메시지 그대로 사용자에게 전달함.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>메타 광고 정책 위반은 자동으로 막아주나요?</summary>
+            <div class="faq-body">
+              <strong>부분만</strong> 막습니다. Claude가 점검하는 것:<br>
+              · 톤·과장 표현 ("100% 보장" 같은 단정)<br>
+              · 가격 표시 (정상가/할인가 표기 누락)<br>
+              · 보편적 표시광고법 가이드<br><br>
+              Claude가 <strong>점검 못 하는 것</strong>:<br>
+              · 의료·금융·아동·도박 등 카테고리 정책 (메타 자체 검수에서 걸림)<br>
+              · 랜딩페이지 컴플라이언스<br>
+              · 지역별 광고 규제 (특히 EU의 GDPR, 한국의 개인정보보호법)<br><br>
+              민감 업종은 반드시 별도 법무 검토.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>내 광고 데이터는 어디에 저장되나요?</summary>
+            <div class="faq-body">
+              <strong>저장되지 않습니다.</strong> 흐름은:<br><br>
+              메타 Graph API → MCP 서버(메타가 운영) → Claude API(Anthropic) → 사용자 터미널<br><br>
+              MCP 서버는 메타가 운영하므로 데이터는 메타 본사 내부에만 머무름. Anthropic는 광고 데이터를 학습에 사용하지 않음(공식 정책 — Commercial Terms 참조).
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>이 가이드는 어디까지 적용 가능한가요?</summary>
+            <div class="faq-body">
+              <strong>적용 가능</strong>:<br>
+              · 메타(Facebook·Instagram) 광고 운영 전 영역<br>
+              · D2C 전자상거래 / 앱 인스톨 / 리드 수집 / 브랜드 인지<br>
+              · 1인~중소 광고주<br><br>
+              <strong>적용 한계</strong>:<br>
+              · 대기업급 광고비 (월 ₩1억 이상) — Claude 자동화보다 메타 공식 컨설턴트가 효율적<br>
+              · 구글·틱톡·카카오 광고 — 다른 MCP 필요 (각 플랫폼별 별도 셋업)<br>
+              · 오프라인·검색광고 — 본 가이드 범위 외
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- FINAL CHECKLIST -->
+      <section id="checklist" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">완료 기준</div>
+          <h2>최종 셋업 체크리스트</h2>
+          <p class="step-sub">아래 항목이 모두 완료되면 <code>/smeta</code> 운영 가능 상태입니다.</p>
+        </div>
+
+        <div class="checklist">
+          <div class="checklist-label">Setup done when</div>
+          <ul>
+            <li>Claude Code 설치 + <code>claude --version</code> 정상 표시</li>
+            <li>BM 자산 정리 완료 (광고계정·페이지·픽셀·결제수단·지출한도)</li>
+            <li>Meta Ads MCP 등록 (<code>claude mcp list</code>에서 ✓ Connected)</li>
+            <li>OAuth 인증 완료 (Facebook 로그인 + 권한 동의)</li>
+            <li>44개 권한 분류 적용 (Read 34개 = 항상 허용, Write 10개 = 승인 필요)</li>
+            <li>광고계정 지출 한도(Account Spending Limit) 월 한도 설정</li>
+            <li><code>/smeta</code> 실행 시 진단 6단계가 실제로 돌아감</li>
+            <li>첫 캠페인 일예산 ₩10K~₩20K 캡으로 출고</li>
+            <li>매일 아침 <code>/smeta 리포트 1</code> 모니터링 루틴 정착</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 공유·면책 -->
+      <section id="legal-final" class="step">
+        <div class="step-header">
+          <div class="step-eyebrow">License & Disclaimer</div>
+          <h2>공유 · 재배포 · 면책</h2>
+          <p class="step-sub">이 가이드는 누구나 자유롭게 공유·재배포할 수 있지만, 출처 표기 유지와 본인 광고 책임에 대한 명확한 조건이 있습니다.</p>
+        </div>
+
+        <div class="card-row">
+          <div class="card" style="border-color:#16a34a;">
+            <h4>✅ 허용</h4>
+            <ul class="bullets" style="margin:8px 0 0; padding-left:18px">
+              <li>비상업적 목적의 자유 공유·재배포</li>
+              <li>본인 사업·외주 인계용 사본 보관</li>
+              <li>본인 회사 내부 트레이닝 자료 활용</li>
+              <li>번역·일부 발췌 (원본 링크 함께 표기 시)</li>
+              <li>스크린샷·인용 (출처 명시 시)</li>
+            </ul>
+          </div>
+          <div class="card" style="border-color:#dc2626;">
+            <h4>⛔ 금지</h4>
+            <ul class="bullets" style="margin:8px 0 0; padding-left:18px">
+              <li>출처(nova) 표기 삭제·변조</li>
+              <li>본인 명의·회사명으로 통째 재게재</li>
+              <li>유료 콘텐츠·강의 자료로 판매</li>
+              <li>내용 일부 수정 후 "원본" 사칭</li>
+              <li>AI 학습용 데이터셋 무단 포함</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>📌 출처 표기 권장 양식</strong>
+          공유·인용 시 다음 한 줄을 함께 표기해주세요:<br>
+          <code style="margin-top:6px; display:inline-block">출처: nova — Meta Ads Automation Workflow (<a href="#top">원본 링크</a>)</code>
+        </div>
+
+        <h3>면책 조항</h3>
+        <div class="callout danger">
+          <strong>본 가이드 사용에 따른 책임은 전적으로 사용자에게 있습니다.</strong>
+          <ol style="margin-top:8px">
+            <li><strong>광고비 손실 면책</strong> — 본 가이드를 따라 운영한 결과로 발생하는 광고비 손실·ROAS 미달·매출 미달은 사용자 본인 책임. nova는 어떠한 광고 성과도 보장하지 않습니다.</li>
+            <li><strong>정책 위반 면책</strong> — Meta 광고 정책·표시광고법·개인정보보호법·각 국가 규제 위반으로 인한 광고계정 정지·법적 책임은 사용자 본인이 부담. 민감 업종(의료·금융·아동·도박 등)은 별도 전문가 검토 필수.</li>
+            <li><strong>API·UI 변경 면책</strong> — Meta Ads API, Claude Code, MCP 사양은 사전 고지 없이 변경될 수 있음. 작성 시점 기준의 정보이며 최신 정확성은 보장되지 않습니다.</li>
+            <li><strong>제3자 서비스 면책</strong> — Anthropic(Claude), Meta(Facebook·Instagram), 기타 인용된 외부 서비스의 약관·과금·장애에 대해 nova는 어떠한 책임도 지지 않습니다.</li>
+            <li><strong>일반 정보 제공</strong> — 본 가이드는 일반 정보 제공 목적이며 특정 사업·법무·세무·재무 자문이 아닙니다. 중요한 의사결정 전에 자격을 갖춘 전문가와 별도 상담 필수.</li>
+          </ol>
+        </div>
+
+        <div class="callout info">
+          <strong>⚠ 첫 캠페인 출고 전 필독</strong>
+          본 가이드를 따라 첫 캠페인을 출고하기 전, 반드시 (1) Meta Ads Manager에서 광고계정 지출 한도를 설정하고, (2) 첫 일예산을 ₩10,000~20,000으로 제한하며, (3) 광고 검수 결과를 24시간 이내에 확인하세요. 자동화에 광고비를 100% 위임하지 마세요.
+        </div>
+
+        <p style="text-align:center; margin-top:32px; font-size:12.5px; color:var(--mute);">
+          이 조건에 동의하지 않으면 본 가이드를 사용·공유·재배포할 수 없습니다.<br>
+          이 문서를 열어 사용하는 것 자체로 위 조건에 동의한 것으로 간주됩니다.
+        </p>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Copy Button Script -->
+<script>
+(function() {
+  document.querySelectorAll('pre').forEach(function(pre) {
+    // skip if already wrapped
+    if (pre.parentNode.classList && pre.parentNode.classList.contains('pre-wrap')) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', function() {
+      var text = pre.textContent || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(function() {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 1500);
+        }).catch(function() {
+          fallbackCopy(text, btn);
+        });
+      } else {
+        fallbackCopy(text, btn);
+      }
+    });
+    wrap.appendChild(btn);
+  });
+
+  function fallbackCopy(text, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1500);
+    } catch (e) {
+      btn.textContent = 'Failed';
+    }
+    document.body.removeChild(ta);
+  }
+})();
+</script>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-brand">
+      <span class="brand-dot"></span>
+      nova
+    </div>
+    <div class="footer-meta">
+      <div>Meta Ads Automation Workflow · v0.7 · 2026-05-18</div>
+      <div>workflow_smeta_setup.html · 살아있는 가이드</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

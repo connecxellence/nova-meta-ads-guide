@@ -1162,7 +1162,10 @@
 <!-- HERO -->
 <div class="container" id="top">
   <section class="hero">
-    <div class="hero-tag">Setup Workflow Guide</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;">
+      <span class="hero-tag" style="margin-bottom:0;">Setup Workflow Guide</span>
+      <span class="hero-tag" style="margin-bottom:0; background:#fef3c7; color:#92400e;">👥 지인 공유용</span>
+    </div>
     <h1>메타 광고를 AI에게 안전하게 맡기는 셋업 워크플로우.</h1>
     <p class="hero-lede">
       Claude Code, Meta Ads MCP, 그리고 본인 회사용 슬래시 명령을 처음부터 만드는 7단계 가이드입니다. 광고비 사고 없이 첫 캠페인까지. 본 문서는 nova의 레퍼런스로 보여주지만, <strong>본인 환경에 맞춰 슬래시 명령을 직접 만드는 방법까지 포함</strong>합니다.
@@ -2052,63 +2055,25 @@ claude mcp add-from-claude-desktop</code></pre>
         </div>
       </section>
 
-      <!-- 공유·면책 -->
+      <!-- 출고 전 필독 + 공유 한 줄 -->
       <section id="legal-final" class="step">
         <div class="step-header">
-          <div class="step-eyebrow">License & Disclaimer</div>
-          <h2>공유 · 재배포 · 면책</h2>
-          <p class="step-sub">이 가이드는 누구나 자유롭게 공유·재배포할 수 있지만, 출처 표기 유지와 본인 광고 책임에 대한 명확한 조건이 있습니다.</p>
+          <div class="step-eyebrow">Before You Launch</div>
+          <h2>첫 캠페인 출고 전 필독</h2>
+          <p class="step-sub">자동화에 광고비를 100% 위임하지 마세요. 아래 3가지는 반드시 본인이 직접 확인하고 출고하세요.</p>
         </div>
 
-        <div class="card-row">
-          <div class="card" style="border-color:#16a34a;">
-            <h4>✅ 허용</h4>
-            <ul class="bullets" style="margin:8px 0 0; padding-left:18px">
-              <li>비상업적 목적의 자유 공유·재배포</li>
-              <li>본인 사업·외주 인계용 사본 보관</li>
-              <li>본인 회사 내부 트레이닝 자료 활용</li>
-              <li>번역·일부 발췌 (원본 링크 함께 표기 시)</li>
-              <li>스크린샷·인용 (출처 명시 시)</li>
-            </ul>
-          </div>
-          <div class="card" style="border-color:#dc2626;">
-            <h4>⛔ 금지</h4>
-            <ul class="bullets" style="margin:8px 0 0; padding-left:18px">
-              <li>출처(nova) 표기 삭제·변조</li>
-              <li>본인 명의·회사명으로 통째 재게재</li>
-              <li>유료 콘텐츠·강의 자료로 판매</li>
-              <li>내용 일부 수정 후 "원본" 사칭</li>
-              <li>AI 학습용 데이터셋 무단 포함</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="callout warn">
-          <strong>📌 출처 표기 권장 양식</strong>
-          공유·인용 시 다음 한 줄을 함께 표기해주세요:<br>
-          <code style="margin-top:6px; display:inline-block">출처: nova — Meta Ads Automation Workflow (<a href="#top">원본 링크</a>)</code>
-        </div>
-
-        <h3>면책 조항</h3>
         <div class="callout danger">
-          <strong>본 가이드 사용에 따른 책임은 전적으로 사용자에게 있습니다.</strong>
+          <strong>⚠ 출고 전 3중 안전 체크</strong>
           <ol style="margin-top:8px">
-            <li><strong>광고비 손실 면책</strong> — 본 가이드를 따라 운영한 결과로 발생하는 광고비 손실·ROAS 미달·매출 미달은 사용자 본인 책임. nova는 어떠한 광고 성과도 보장하지 않습니다.</li>
-            <li><strong>정책 위반 면책</strong> — Meta 광고 정책·표시광고법·개인정보보호법·각 국가 규제 위반으로 인한 광고계정 정지·법적 책임은 사용자 본인이 부담. 민감 업종(의료·금융·아동·도박 등)은 별도 전문가 검토 필수.</li>
-            <li><strong>API·UI 변경 면책</strong> — Meta Ads API, Claude Code, MCP 사양은 사전 고지 없이 변경될 수 있음. 작성 시점 기준의 정보이며 최신 정확성은 보장되지 않습니다.</li>
-            <li><strong>제3자 서비스 면책</strong> — Anthropic(Claude), Meta(Facebook·Instagram), 기타 인용된 외부 서비스의 약관·과금·장애에 대해 nova는 어떠한 책임도 지지 않습니다.</li>
-            <li><strong>일반 정보 제공</strong> — 본 가이드는 일반 정보 제공 목적이며 특정 사업·법무·세무·재무 자문이 아닙니다. 중요한 의사결정 전에 자격을 갖춘 전문가와 별도 상담 필수.</li>
+            <li>Meta Ads Manager에서 <strong>광고계정 지출 한도(Account Spending Limit)</strong> 월 한도 설정</li>
+            <li>첫 캠페인 <strong>일예산을 ₩10,000~20,000</strong>으로 제한</li>
+            <li>출고 후 <strong>24시간 이내 검수·노출 결과 확인</strong> (Ads Manager 직접 접속)</li>
           </ol>
         </div>
 
-        <div class="callout info">
-          <strong>⚠ 첫 캠페인 출고 전 필독</strong>
-          본 가이드를 따라 첫 캠페인을 출고하기 전, 반드시 (1) Meta Ads Manager에서 광고계정 지출 한도를 설정하고, (2) 첫 일예산을 ₩10,000~20,000으로 제한하며, (3) 광고 검수 결과를 24시간 이내에 확인하세요. 자동화에 광고비를 100% 위임하지 마세요.
-        </div>
-
-        <p style="text-align:center; margin-top:32px; font-size:12.5px; color:var(--mute);">
-          이 조건에 동의하지 않으면 본 가이드를 사용·공유·재배포할 수 없습니다.<br>
-          이 문서를 열어 사용하는 것 자체로 위 조건에 동의한 것으로 간주됩니다.
+        <p style="text-align:center; margin-top:40px; font-size:12.5px; color:var(--mute); line-height:1.7;">
+          출처 표기(nova) 유지 시 자유 공유·재배포 가능. 본 가이드 사용으로 발생하는 광고비 손실·정책 위반·법적 책임은 사용자 본인에게 있습니다.
         </p>
       </section>
 

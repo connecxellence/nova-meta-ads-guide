@@ -1104,6 +1104,306 @@
     margin-bottom: 8px;
   }
 
+  /* === 모바일·태블릿 통합 최적화 === */
+
+  /* 태블릿 (max 900px) — 글로서리·기타 그리드 정리 */
+  @media (max-width: 900px) {
+    body { font-size: 14.5px; }
+    .container { padding: 0 24px; }
+    .topbar-inner { padding: 14px 24px; }
+    .hero { padding: 56px 0 48px; }
+    .hero h1 { font-size: clamp(28px, 5vw, 44px); }
+    .hero-lede { font-size: 16.5px; }
+    .hero-meta { gap: 20px; }
+    .glossary-grid { grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+    .router-modes { grid-template-columns: repeat(3, 1fr); }
+    .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+    section.step { margin-bottom: 56px; }
+    .step-header h2 { font-size: 26px; }
+    .step-header .step-sub { font-size: 15px; }
+    .step-body { padding-left: 0; }
+  }
+
+  /* 모바일 (max 640px) — 최적화 강화 */
+  @media (max-width: 640px) {
+    body {
+      padding: 0;
+      font-size: 14px;
+    }
+    .container { padding: 0 16px; }
+    .topbar-inner { padding: 12px 16px; }
+    .brand { font-size: 14px; }
+    .topbar-meta { display: none; }
+
+    /* Hero */
+    .hero {
+      padding: 36px 0 32px;
+    }
+    .hero-tag {
+      font-size: 10.5px;
+      padding: 4px 10px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 6vw, 32px);
+      letter-spacing: -0.025em;
+      margin-bottom: 18px;
+    }
+    .hero-lede {
+      font-size: 15px;
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+    .hero-meta {
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 18px;
+    }
+    .hero-meta-item .key { font-size: 10.5px; }
+    .hero-meta-item .val { font-size: 13px; }
+
+    /* Main layout */
+    .main {
+      padding: 32px 0;
+      gap: 24px;
+    }
+    .sidebar {
+      padding: 16px;
+      border-radius: 10px;
+    }
+    .sidebar-label { font-size: 10px; margin-bottom: 8px; }
+    .toc-list a {
+      padding: 10px 12px;
+      font-size: 13px;
+      gap: 8px;
+    }
+    .toc-list a .num {
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+    }
+
+    /* Sections */
+    section.step { margin-bottom: 40px; }
+    .step-header {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+    }
+    .step-header h2 {
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+    .step-header .step-sub { font-size: 14px; }
+    .step-header .step-eyebrow { font-size: 10.5px; }
+
+    h3 {
+      font-size: 17px;
+      margin: 28px 0 10px;
+    }
+    h4 { font-size: 13.5px; }
+    p { font-size: 14px; }
+
+    /* Code & pre */
+    code { font-size: 12px; padding: 2px 5px; }
+    pre {
+      padding: 14px 16px;
+      font-size: 12px;
+      border-radius: 8px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    pre code { word-break: break-word; }
+    .copy-btn {
+      opacity: 1;
+      padding: 4px 8px;
+      font-size: 10.5px;
+    }
+
+    /* Cards */
+    .card { padding: 18px 18px; }
+    .card h4 { font-size: 14px; }
+    .card p { font-size: 13px; }
+    .card pre { font-size: 11.5px; padding: 10px 12px; }
+    .card-row {
+      grid-template-columns: 1fr !important;
+      gap: 12px;
+    }
+
+    /* Callouts */
+    .callout {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-radius: 0 8px 8px 0;
+    }
+    .callout ul, .callout ol { padding-left: 18px; }
+
+    /* Tables — horizontal scroll on mobile */
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+      font-size: 12.5px;
+      -webkit-overflow-scrolling: touch;
+    }
+    table thead, table tbody { display: table; width: 100%; }
+    table th, table td { padding: 10px 12px; }
+    table td:first-child { white-space: nowrap; }
+
+    /* Glossary */
+    .glossary {
+      padding: 20px 18px;
+      border-radius: 12px;
+    }
+    .glossary-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .glossary-item dt { font-size: 12px; }
+    .glossary-item dd { font-size: 12.5px; }
+
+    /* Router */
+    .router { padding: 20px 16px; }
+    .router-center code {
+      font-size: 13px;
+      padding: 10px 14px;
+    }
+    .router-modes {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .mode { padding: 12px 10px; }
+    .mode .cmd { font-size: 10px; }
+    .mode .label { font-size: 12px; }
+    .mode .desc { font-size: 10.5px; }
+
+    /* Gates */
+    .gate {
+      padding: 14px 16px;
+      gap: 12px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .gate-badge {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+    .gate-title { font-size: 13.5px; }
+    .gate-desc { font-size: 12.5px; }
+
+    /* Metrics grid */
+    .metrics-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .metric { padding: 12px 14px; }
+    .metric-key { font-size: 12px; }
+    .metric-def { font-size: 11.5px; }
+    .metric-bench { font-size: 10.5px; }
+
+    /* Formula */
+    .formula {
+      padding: 16px 18px;
+      border-radius: 10px;
+    }
+    .formula-eq {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+    .formula-ex { font-size: 12px; }
+
+    /* FAQ */
+    details.faq summary {
+      padding: 14px 16px;
+      font-size: 13.5px;
+    }
+    details.faq summary::after { font-size: 18px; }
+    details.faq .faq-body {
+      padding: 0 16px 14px;
+      font-size: 12.5px;
+    }
+
+    /* Troubleshoot */
+    .ts-item {
+      padding: 16px 18px;
+    }
+    .ts-item h4 { font-size: 13.5px; }
+    .ts-item p { font-size: 12.5px; }
+
+    /* Checklist */
+    .checklist {
+      padding: 20px 18px;
+      border-radius: 12px;
+    }
+    .checklist li { font-size: 13.5px; gap: 10px; }
+    .checklist li::before { width: 16px; height: 16px; }
+
+    /* Hierarchy diagram */
+    .h-node { padding: 14px 16px; }
+    .h-node.level-2 { margin-left: 20px; }
+    .h-node.level-3 { margin-left: 40px; }
+    .h-node .h-title { font-size: 14px; }
+    .h-node .h-desc { font-size: 12px; }
+
+    /* Screenshot figure */
+    .screenshot {
+      padding: 12px !important;
+    }
+    .screenshot-icon { width: 36px; height: 36px; font-size: 18px; }
+    .screenshot-label { font-size: 10px; }
+    .screenshot-title { font-size: 12.5px; }
+    .screenshot-desc { font-size: 11.5px; }
+
+    /* OL */
+    ol li { padding-left: 28px; font-size: 13px; }
+    ol li::before { width: 20px; height: 20px; font-size: 10.5px; }
+
+    /* Footer */
+    footer { padding: 32px 0; margin-top: 56px; }
+    .footer-brand { font-size: 14px; }
+    .footer-meta { font-size: 11px; }
+  }
+
+  /* 초소형 모바일 (max 380px) */
+  @media (max-width: 380px) {
+    .hero h1 { font-size: 22px; }
+    .step-header h2 { font-size: 19px; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .router-modes { grid-template-columns: 1fr 1fr; }
+    pre { font-size: 11px; }
+  }
+
+  /* 다크모드 자동 적용 (사용자 OS 설정 따름) */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f0f0f;
+      --paper: #1a1a1a;
+      --ink: #f4f4f5;
+      --ink-2: #d4d4d8;
+      --mute: #a1a1aa;
+      --mute-2: #71717a;
+      --line: #27272a;
+      --line-2: #18181b;
+      --accent: #14b8a6;
+      --accent-soft: #134e4a;
+      --accent-ink: #99f6e4;
+      --code-bg: #18181b;
+      --code-fg: #e4e4e7;
+      --softpink: #1f1d1a;
+    }
+    .callout { background: #0a1f1c; }
+    .callout.warn { background: #1f1a08; color: #fde68a; }
+    .callout.danger { background: #1f0a0a; color: #fca5a5; }
+    .callout.info { background: #0a1530; color: #93c5fd; }
+    .formula { background: linear-gradient(135deg, #0d2521 0%, #18181b 100%); }
+    .card.recommended { background: linear-gradient(to bottom, #1a1a1a, #142e2a); }
+    .screenshot { background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%); }
+    .topbar { background: rgba(15, 15, 15, 0.85); }
+    .mode { background: #18181b; }
+    details.faq[open] summary::after { color: var(--accent); }
+    table th { background: #18181b; }
+  }
+
   /* 인쇄용 */
   @media print {
     body { background: white; color: black; font-size: 11pt; }
@@ -1250,7 +1550,7 @@
             <dl class="glossary-item"><dt>JSON</dt><dd>JavaScript Object Notation. 설정·데이터를 저장하는 텍스트 형식. <code>{ "키": "값" }</code> 구조</dd></dl>
             <dl class="glossary-item"><dt>HTTP transport</dt><dd>MCP 서버와 통신하는 방식. URL로 접속. Claude Code의 <code>--transport http</code> 옵션</dd></dl>
             <dl class="glossary-item"><dt>--scope user</dt><dd>"사용자 전체에 등록" 옵션. 폴더 안 가리고 모든 곳에서 쓸 수 있게 됨</dd></dl>
-            <dl class="glossary-item"><dt>subagent_type</dt><dd>Claude 내부에서 호출할 전문 에이전트 유형. 예: <code>softhing-cro</code>, <code>my-cfo</code> 등 직무 에이전트 ID</dd></dl>
+            <dl class="glossary-item"><dt>subagent_type</dt><dd>Claude 내부에서 호출할 전문 에이전트 유형. 예: <code>my-cro</code>, <code>my-cfo</code>, <code>my-legal</code> 등 직무 에이전트 ID</dd></dl>
           </div>
         </div>
       </section>
